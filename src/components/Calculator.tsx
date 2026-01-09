@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { relativeCalculator } from '../utils/relativeCalculator';
+// 使用新的图结构计算器
+import { relativeGraph } from '../utils/relativeGraph';
 import { addHistory, getHistory, deleteHistory, clearHistory, type HistoryItem } from '../utils/historyStorage';
 
 /**
@@ -45,7 +46,7 @@ export default function Calculator() {
       setResult('');
     } else if (button === '=') {
       if (input.trim()) {
-        const calculatedResult = relativeCalculator.calculate(input);
+        const calculatedResult = relativeGraph.calculate(input);
         setResult(calculatedResult);
         addHistory(input, calculatedResult);
         setHistory(getHistory());
