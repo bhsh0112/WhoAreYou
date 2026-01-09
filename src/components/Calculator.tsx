@@ -5,7 +5,7 @@ import { addHistory, getHistory, deleteHistory, clearHistory, type HistoryItem }
 /**
  * 关系按钮类型
  */
-type RelationButton = '父' | '母' | '夫' | '妻' | '兄' | '弟' | '姐' | '妹' | '子' | '女' | '的' | '=' | 'AC' | 'DEL';
+type RelationButton = '父' | '母' | '丈夫' | '妻' | '兄' | '弟' | '姐' | '妹' | '子' | '女' | '的' | '=' | 'AC' | 'DEL';
 
 /**
  * 计算器组件
@@ -20,6 +20,18 @@ export default function Calculator() {
   useEffect(() => {
     setHistory(getHistory());
   }, []);
+
+  /**
+   * 格式化输入显示（将独立的"夫"显示为"丈夫"，但不替换"丈夫"中的"夫"）
+   */
+  const formatInputDisplay = (text: string): string => {
+    // 先保护所有"丈夫"，然后替换独立的"夫"，最后恢复"丈夫"
+    // 使用特殊标记避免与用户输入冲突
+    return text
+      .replace(/丈夫/g, '【HUSBAND_PLACEHOLDER】')  // 先标记所有"丈夫"
+      .replace(/夫/g, '丈夫')                        // 替换独立的"夫"为"丈夫"
+      .replace(/【HUSBAND_PLACEHOLDER】/g, '丈夫');  // 恢复原来的"丈夫"
+  };
 
   /**
    * 处理按钮点击
@@ -38,6 +50,15 @@ export default function Calculator() {
         addHistory(input, calculatedResult);
         setHistory(getHistory());
       }
+    } else if (button === '丈夫') {
+      // 如果最后是"丈"，则替换为"丈夫"；否则追加"丈夫"
+      setInput(prev => {
+        if (prev.endsWith('丈')) {
+          return prev.slice(0, -1) + '丈夫';
+        }
+        return prev + '丈夫';
+      });
+      setResult('');
     } else {
       setInput(prev => prev + button);
       setResult('');
@@ -74,7 +95,7 @@ export default function Calculator() {
 
   // 按钮配置
   const buttons: RelationButton[][] = [
-    ['父', '母', '夫', '妻'],
+    ['父', '母', '丈夫', '妻'],
     ['兄', '弟', '姐', '妹'],
     ['子', '女', '的', '='],
   ];
@@ -94,7 +115,7 @@ export default function Calculator() {
           <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-6">
             <div className="text-right">
               <div className="text-gray-400 text-sm mb-2 min-h-[20px] break-all">
-                {input || '请输入关系'}
+                {formatInputDisplay(input) || '请输入关系'}
               </div>
               {result && (
                 <div className="text-2xl font-bold text-white mt-2 break-all">
@@ -137,7 +158,7 @@ export default function Calculator() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <div className="text-sm text-gray-700 font-medium">{item.relationChain}</div>
+                          <div className="text-sm text-gray-700 font-medium">{formatInputDisplay(item.relationChain)}</div>
                           <div className="text-xs text-gray-500 mt-1">= {item.result}</div>
                         </div>
                         <button
