@@ -26,7 +26,9 @@ function createWindow() {
   const isDev = process.env.NODE_ENV !== 'production';
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173');
-    mainWindow.webContents.openDevTools();
+    // 开发环境下不自动打开开发者工具
+    // 如需调试，可以使用快捷键 Ctrl+Shift+I (Windows/Linux) 或 Cmd+Option+I (Mac)
+    // mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(join(__dirname, '../dist/index.html'));
   }

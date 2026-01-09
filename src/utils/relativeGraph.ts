@@ -407,6 +407,42 @@ class RelativeGraph {
   public getRelationsFrom(node: string): RelationEdge[] {
     return this.adjacencyList.get(node) || [];
   }
+
+  /**
+   * 获取所有节点数据（用于可视化）
+   */
+  public getAllNodesData(): Map<string, GraphNode> {
+    return this.nodes;
+  }
+
+  /**
+   * 获取所有边数据（用于可视化）
+   */
+  public getAllEdges(): RelationEdge[] {
+    const edges: RelationEdge[] = [];
+    this.adjacencyList.forEach((edgeList) => {
+      edges.push(...edgeList);
+    });
+    return edges;
+  }
+
+  /**
+   * 获取图的完整数据（用于可视化）
+   */
+  public getGraphData() {
+    return {
+      nodes: Array.from(this.nodes.entries()).map(([title, node]) => ({
+        id: title,
+        ...node,
+      })),
+      edges: this.getAllEdges().map((edge, index) => ({
+        id: `edge-${index}`,
+        from: edge.from,
+        to: edge.to,
+        relation: edge.relation,
+      })),
+    };
+  }
 }
 
 // 导出单例
